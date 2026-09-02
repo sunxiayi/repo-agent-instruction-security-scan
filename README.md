@@ -9,13 +9,13 @@ A deterministic, zero-dependency CLI and GitHub Action that reviews coding-agent
 Run the reviewed GitHub release directly; no global install, account, token, or dependency installation is required:
 
 ```bash
-npx --yes github:sunxiayi/repo-agent-instruction-security-scan -- .
+npx --yes github:sunxiayi/repo-agent-instruction-security-scan .
 ```
 
 The CLI prints line-level findings and exits non-zero when a high-severity review prompt is found. It can scan named paths, change the failure threshold, and write JSON or SARIF 2.1.0:
 
 ```bash
-npx --yes github:sunxiayi/repo-agent-instruction-security-scan -- \
+npx --yes github:sunxiayi/repo-agent-instruction-security-scan \
   . --fail-on medium --format sarif --output agent-instructions.sarif
 ```
 

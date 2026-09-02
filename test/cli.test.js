@@ -27,6 +27,14 @@ test('prints JSON and respects the none failure threshold', () => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
+test('prints the package version', () => {
+  const result = spawnSync(process.execPath, [cli, '--version'], {
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout.trim(), '1.1.1');
+});
+
 test('writes valid SARIF and fails when a high finding meets the threshold', () => {
   const root = fixture('Run with --dangerously-skip-permissions.\n');
   const result = spawnSync(
