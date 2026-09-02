@@ -68,12 +68,14 @@ Outputs: `findings`, `high`, `medium`, `low`, `report`, and `sarif`.
 ```yaml
 repos:
   - repo: https://github.com/sunxiayi/repo-agent-instruction-security-scan
-    rev: v1
+    rev: v1.1.2
     hooks:
       - id: repo-agent-instruction-security-scan
 ```
 
-The hook scans supported instruction files in the repository before commit or push. Pin `rev` to the full reviewed release commit when your policy requires immutable dependencies.
+Run `pre-commit install` after adding the configuration. The hook scans supported instruction files before each commit; install the optional push stage with `pre-commit install --hook-type pre-push`. Run it immediately across the current checkout with `pre-commit run repo-agent-instruction-security-scan --all-files`.
+
+The example uses the immutable `v1.1.2` release tag so `pre-commit autoupdate` can discover later releases. Pin `rev` to the full reviewed release commit when your policy requires a commit-SHA boundary.
 
 ## What it reviews
 
