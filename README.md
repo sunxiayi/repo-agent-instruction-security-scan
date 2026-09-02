@@ -6,9 +6,19 @@ A deterministic, zero-dependency CLI and GitHub Action that reviews coding-agent
 
 ## Run it locally
 
-Run the reviewed release commit directly; no global install, account, or token
-is required. On first use, `npx` asks before downloading the exact pinned
-archive:
+On macOS or Linux, install the verified Homebrew formula:
+
+```bash
+brew install sunxiayi/tap/repo-agent-scan
+repo-agent-scan .
+```
+
+The formula is published from the [Repo Agent Kit Homebrew Tap](https://github.com/sunxiayi/homebrew-tap)
+and pins the v1.1.2 source archive by SHA-256.
+
+On any platform with Node.js 20 or newer, run the reviewed release commit
+directly; no global install, account, or token is required. On first use,
+`npx` asks before downloading the exact pinned archive:
 
 ```bash
 npx \
