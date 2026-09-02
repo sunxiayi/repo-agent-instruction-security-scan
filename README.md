@@ -16,6 +16,14 @@ repo-agent-scan .
 The formula is published from the [Repo Agent Kit Homebrew Tap](https://github.com/sunxiayi/homebrew-tap)
 and pins the v1.1.2 source archive by SHA-256.
 
+On Windows, install the same verified release through Scoop:
+
+```powershell
+scoop bucket add repoagentkit https://github.com/sunxiayi/scoop-bucket
+scoop install repoagentkit/repo-agent-scan
+repo-agent-scan .
+```
+
 On any platform with Node.js 20 or newer, run the reviewed release commit
 directly; no global install, account, or token is required. On first use,
 `npx` asks before downloading the exact pinned archive:
