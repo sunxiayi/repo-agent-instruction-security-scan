@@ -33,5 +33,5 @@ outputs:
     description: JSON report path, or an empty string when report output is disabled.
 
 runs:
-  using: node20
+  using: node24
   main: src/index.js
