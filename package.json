@@ -1,0 +1,10 @@
+{
+  "name": "repo-agent-instruction-security-scan-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deterministic GitHub Action for reviewing coding-agent instruction files.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

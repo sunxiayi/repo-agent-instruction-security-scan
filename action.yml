@@ -1,0 +1,37 @@
+name: Repo Agent Instruction Security Scan
+description: Scan AGENTS.md, CLAUDE.md, Cursor, Copilot, Gemini, and Windsurf instructions for risky patterns.
+author: Repo Agent Kit
+
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  paths:
+    description: Newline-separated files or directories to scan.
+    required: false
+    default: .
+  fail-on:
+    description: Minimum severity that fails the job (high, medium, low, or none).
+    required: false
+    default: high
+  report-path:
+    description: Path for the machine-readable JSON report. Set to an empty string to disable it.
+    required: false
+    default: repo-agent-instruction-security.json
+
+outputs:
+  findings:
+    description: Total number of findings.
+  high:
+    description: Number of high-severity findings.
+  medium:
+    description: Number of medium-severity findings.
+  low:
+    description: Number of low-severity findings.
+  report:
+    description: JSON report path, or an empty string when report output is disabled.
+
+runs:
+  using: node20
+  main: src/index.js
