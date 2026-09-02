@@ -1,7 +1,7 @@
 const { SIGNALS } = require('./scanner');
 
 const TOOL_NAME = 'Repo Agent Instruction Security Scan';
-const TOOL_VERSION = '1.1.2';
+const TOOL_VERSION = '1.1.3';
 
 function sarifLevel(severity) {
   if (severity === 'high') return 'error';

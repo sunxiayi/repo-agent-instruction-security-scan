@@ -32,7 +32,7 @@ test('prints the package version', () => {
     encoding: 'utf8',
   });
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(result.stdout.trim(), '1.1.2');
+  assert.equal(result.stdout.trim(), '1.1.3');
 });
 
 test('writes valid SARIF and fails when a high finding meets the threshold', () => {

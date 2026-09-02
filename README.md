@@ -14,7 +14,7 @@ repo-agent-scan .
 ```
 
 The formula is published from the [Repo Agent Kit Homebrew Tap](https://github.com/sunxiayi/homebrew-tap)
-and pins the v1.1.2 source archive by SHA-256.
+and pins the signed v1.1.3 release archive by SHA-256.
 
 On Windows, install the same verified release through Scoop:
 
@@ -30,7 +30,7 @@ directly; no global install, account, or token is required. On first use,
 
 ```bash
 npx \
-  https://github.com/sunxiayi/repo-agent-instruction-security-scan/archive/4e0a03940411c3a6a79f28b5e0c200838884486d.tar.gz \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.1.3/repo-agent-instruction-security-scan-1.1.3.tar.gz \
   .
 ```
 
@@ -38,13 +38,15 @@ The CLI prints line-level findings and exits non-zero when a high-severity revie
 
 ```bash
 npx \
-  https://github.com/sunxiayi/repo-agent-instruction-security-scan/archive/4e0a03940411c3a6a79f28b5e0c200838884486d.tar.gz \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.1.3/repo-agent-instruction-security-scan-1.1.3.tar.gz \
   . --fail-on medium --format sarif --output agent-instructions.sarif
 ```
 
 Use `--fail-on none` for reporting without a failing exit code. The archive URL
-is pinned to the reviewed `v1.1.2` commit. Clone and inspect that exact commit
-first when your policy requires local source review before package execution.
+is pinned to the reviewed `v1.1.3` tag and has signed GitHub build provenance.
+Download it first and run `gh attestation verify <archive> -R
+sunxiayi/repo-agent-instruction-security-scan` when your policy requires origin
+verification before package execution.
 
 ## Use it in a workflow
 
@@ -93,14 +95,14 @@ Outputs: `findings`, `high`, `medium`, `low`, `report`, and `sarif`.
 ```yaml
 repos:
   - repo: https://github.com/sunxiayi/repo-agent-instruction-security-scan
-    rev: v1.1.2
+    rev: v1.1.3
     hooks:
       - id: repo-agent-instruction-security-scan
 ```
 
 Run `pre-commit install` after adding the configuration. The hook scans supported instruction files before each commit; install the optional push stage with `pre-commit install --hook-type pre-push`. Run it immediately across the current checkout with `pre-commit run repo-agent-instruction-security-scan --all-files`.
 
-The example uses the immutable `v1.1.2` release tag so `pre-commit autoupdate` can discover later releases. Pin `rev` to the full reviewed release commit when your policy requires a commit-SHA boundary.
+The example uses the immutable `v1.1.3` release tag so `pre-commit autoupdate` can discover later releases. Pin `rev` to the full reviewed release commit when your policy requires a commit-SHA boundary.
 
 ## What it reviews
 

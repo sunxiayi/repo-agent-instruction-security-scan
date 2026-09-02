@@ -1,6 +1,6 @@
 {
   "name": "repo-agent-instruction-security-scan",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "private": true,
   "description": "Zero-dependency CLI and GitHub Action for reviewing coding-agent instruction files.",
   "bin": {

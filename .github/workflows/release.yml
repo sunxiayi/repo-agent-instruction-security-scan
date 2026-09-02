@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+
+jobs:
+  release:
+    if: github.repository == 'sunxiayi/repo-agent-instruction-security-scan'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
+      - name: Verify tag and run tests
+        run: |
+          package_version="$(node -p "require('./package.json').version")"
+          tool_version="$(node -p "require('./src/reporters').TOOL_VERSION")"
+          test "$package_version" = "$tool_version"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            test "${GITHUB_REF_NAME#v}" = "$package_version"
+          fi
+          npm test
+
+      - name: Build reproducible release archive
+        id: package
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          artifact="repo-agent-instruction-security-scan-${version}.tar.gz"
+          root="build/repo-agent-instruction-security-scan-${version}"
+          mkdir -p "$root" dist
+          cp -R bin src "$root/"
+          cp .pre-commit-hooks.yaml LICENSE README.md action.yml package.json "$root/"
+          epoch="$(git log -1 --format=%ct)"
+          tar --sort=name --mtime="@${epoch}" --owner=0 --group=0 --numeric-owner -C build -cf - "repo-agent-instruction-security-scan-${version}" | gzip -n > "dist/${artifact}"
+          sha256sum "dist/${artifact}" > "dist/${artifact}.sha256"
+          echo "artifact=dist/${artifact}" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke-test packaged CLI
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          artifact="$(realpath "${{ steps.package.outputs.artifact }}")"
+          mkdir extracted
+          tar -xzf "$artifact" -C extracted
+          test "$(node "extracted/repo-agent-instruction-security-scan-${version}/bin/repo-agent-scan.js" --version)" = "$version"
+          mkdir npm-smoke
+          cd npm-smoke
+          test "$(npm exec --yes --package="file:${artifact}" -- repo-agent-scan --version)" = "$version"
+
+      - name: Generate signed build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: ${{ steps.package.outputs.artifact }}
+
+      - name: Preserve release archive for verification
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: release-archive
+          path: |
+            ${{ steps.package.outputs.artifact }}
+            ${{ steps.package.outputs.artifact }}.sha256
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          artifact="${{ steps.package.outputs.artifact }}"
+          version="$(node -p "require('./package.json').version")"
+          cat > dist/release-notes.md <<'EOF'
+          This release is built from the tagged source by GitHub Actions and carries signed build provenance.
+
+          Verify the downloaded archive before execution:
+
+          ```bash
+          gh attestation verify repo-agent-instruction-security-scan-VERSION.tar.gz -R sunxiayi/repo-agent-instruction-security-scan
+          ```
+
+          The adjacent `.sha256` file provides the exact archive digest used by Homebrew and Scoop.
+          EOF
+          sed -i "s/VERSION/${version}/g" dist/release-notes.md
+          gh release create "$GITHUB_REF_NAME" "$artifact" "${artifact}.sha256" --verify-tag --title "Repo Agent Instruction Security Scan $GITHUB_REF_NAME" --notes-file dist/release-notes.md
