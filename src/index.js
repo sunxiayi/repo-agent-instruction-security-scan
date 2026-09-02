@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+const { toSarif } = require('./reporters');
 const { scanRepository } = require('./scanner');
 
 const severityOrder = { none: 99, high: 3, medium: 2, low: 1 };
@@ -79,6 +80,10 @@ function main() {
     'REPORT-PATH',
     'repo-agent-instruction-security.json',
   ).trim();
+  const sarifPathInput = input(
+    'SARIF-PATH',
+    'repo-agent-instruction-security.sarif',
+  ).trim();
 
   if (!(failOn in severityOrder)) {
     throw new Error('fail-on must be one of: high, medium, low, none');
@@ -111,6 +116,22 @@ function main() {
   appendOutput('medium', report.counts.medium);
   appendOutput('low', report.counts.low);
   appendOutput('report', reportPath);
+  let sarifPath = '';
+  if (sarifPathInput) {
+    sarifPath = path.resolve(workspace, sarifPathInput);
+    const relative = path.relative(workspace, sarifPath);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      throw new Error('sarif-path must stay inside GITHUB_WORKSPACE');
+    }
+    fs.mkdirSync(path.dirname(sarifPath), { recursive: true });
+    fs.writeFileSync(
+      sarifPath,
+      `${JSON.stringify(toSarif(report), null, 2)}\n`,
+    );
+    sarifPath = path.relative(workspace, sarifPath).split(path.sep).join('/');
+  }
+
+  appendOutput('sarif', sarifPath);
   writeSummary(report, failOn);
 
   process.stdout.write(

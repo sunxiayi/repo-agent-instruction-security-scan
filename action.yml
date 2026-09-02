@@ -19,6 +19,10 @@ inputs:
     description: Path for the machine-readable JSON report. Set to an empty string to disable it.
     required: false
     default: repo-agent-instruction-security.json
+  sarif-path:
+    description: Path for the SARIF 2.1.0 report. Set to an empty string to disable it.
+    required: false
+    default: repo-agent-instruction-security.sarif
 
 outputs:
   findings:
@@ -31,6 +35,8 @@ outputs:
     description: Number of low-severity findings.
   report:
     description: JSON report path, or an empty string when report output is disabled.
+  sarif:
+    description: SARIF report path, or an empty string when SARIF output is disabled.
 
 runs:
   using: node24

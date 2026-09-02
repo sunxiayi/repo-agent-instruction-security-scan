@@ -18,7 +18,15 @@ jobs:
           node-version: 24
       - run: npm test
       - name: Scan this action's instructions
+        id: self-scan
         uses: ./
         with:
           paths: AGENTS.md
           fail-on: high
+      - name: Validate action reports and outputs
+        env:
+          JSON_REPORT: ${{ steps.self-scan.outputs.report }}
+          SARIF_REPORT: ${{ steps.self-scan.outputs.sarif }}
+        run: |
+          node -e "const fs=require('node:fs'); const report=JSON.parse(fs.readFileSync(process.env.JSON_REPORT)); if (report.scannedFiles[0] !== 'AGENTS.md') process.exit(1)"
+          node -e "const fs=require('node:fs'); const sarif=JSON.parse(fs.readFileSync(process.env.SARIF_REPORT)); if (sarif.version !== '2.1.0') process.exit(1)"

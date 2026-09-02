@@ -1,0 +1,7 @@
+- id: repo-agent-instruction-security-scan
+  name: Repo agent instruction security scan
+  description: Review coding-agent instruction files without executing them.
+  entry: repo-agent-scan .
+  language: node
+  pass_filenames: false
+  stages: [pre-commit, pre-push]
