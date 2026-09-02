@@ -6,20 +6,27 @@ A deterministic, zero-dependency CLI and GitHub Action that reviews coding-agent
 
 ## Run it locally
 
-Run the reviewed GitHub release directly; no global install, account, token, or dependency installation is required:
+Run the reviewed release commit directly; no global install, account, or token
+is required. On first use, `npx` asks before downloading the exact pinned
+archive:
 
 ```bash
-npx --yes github:sunxiayi/repo-agent-instruction-security-scan .
+npx \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/archive/4e0a03940411c3a6a79f28b5e0c200838884486d.tar.gz \
+  .
 ```
 
 The CLI prints line-level findings and exits non-zero when a high-severity review prompt is found. It can scan named paths, change the failure threshold, and write JSON or SARIF 2.1.0:
 
 ```bash
-npx --yes github:sunxiayi/repo-agent-instruction-security-scan \
+npx \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/archive/4e0a03940411c3a6a79f28b5e0c200838884486d.tar.gz \
   . --fail-on medium --format sarif --output agent-instructions.sarif
 ```
 
-Use `--fail-on none` for reporting without a failing exit code. For an immutable supply-chain boundary, replace the GitHub package reference with a reviewed commit URL or clone the exact release tag before running it.
+Use `--fail-on none` for reporting without a failing exit code. The archive URL
+is pinned to the reviewed `v1.1.2` commit. Clone and inspect that exact commit
+first when your policy requires local source review before package execution.
 
 ## Use it in a workflow
 
