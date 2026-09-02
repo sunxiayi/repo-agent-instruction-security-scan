@@ -2,7 +2,7 @@
 
 [![Test](https://github.com/sunxiayi/repo-agent-instruction-security-scan/actions/workflows/test.yml/badge.svg)](https://github.com/sunxiayi/repo-agent-instruction-security-scan/actions/workflows/test.yml)
 
-A deterministic, zero-dependency CLI and GitHub Action that reviews coding-agent instruction files before they reach your coding agent or default branch. It scans `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, Cursor rules, GitHub Copilot instructions, Claude rules, and Windsurf rules without executing repository code or sending file contents to a service.
+A deterministic, zero-dependency CLI and GitHub Action that reviews coding-agent instruction files before they reach your coding agent or default branch. It scans `AGENTS.md`, every `SKILL.md`, `CLAUDE.md`, `GEMINI.md`, Cursor rules, GitHub Copilot instructions, Claude rules, and Windsurf rules without executing repository code or sending file contents to a service.
 
 ## Run it locally
 
@@ -14,7 +14,7 @@ repo-agent-scan .
 ```
 
 The formula is published from the [Repo Agent Kit Homebrew Tap](https://github.com/sunxiayi/homebrew-tap)
-and pins the signed v1.1.3 release archive by SHA-256.
+and pins the signed v1.2.0 release archive by SHA-256.
 
 On Windows, install the same verified release through Scoop:
 
@@ -30,7 +30,7 @@ directly; no global install, account, or token is required. On first use,
 
 ```bash
 npx \
-  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.1.3/repo-agent-instruction-security-scan-1.1.3.tar.gz \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.2.0/repo-agent-instruction-security-scan-1.2.0.tar.gz \
   .
 ```
 
@@ -38,12 +38,12 @@ The CLI prints line-level findings and exits non-zero when a high-severity revie
 
 ```bash
 npx \
-  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.1.3/repo-agent-instruction-security-scan-1.1.3.tar.gz \
+  https://github.com/sunxiayi/repo-agent-instruction-security-scan/releases/download/v1.2.0/repo-agent-instruction-security-scan-1.2.0.tar.gz \
   . --fail-on medium --format sarif --output agent-instructions.sarif
 ```
 
 Use `--fail-on none` for reporting without a failing exit code. The archive URL
-is pinned to the reviewed `v1.1.3` tag and has signed GitHub build provenance.
+is pinned to the reviewed `v1.2.0` tag and has signed GitHub build provenance.
 Download it first and run `gh attestation verify <archive> -R
 sunxiayi/repo-agent-instruction-security-scan` when your policy requires origin
 verification before package execution.
@@ -57,6 +57,7 @@ on:
   pull_request:
     paths:
       - '**/AGENTS.md'
+      - '**/SKILL.md'
       - '**/CLAUDE.md'
       - '**/GEMINI.md'
       - '**/.cursorrules'
@@ -95,14 +96,14 @@ Outputs: `findings`, `high`, `medium`, `low`, `report`, and `sarif`.
 ```yaml
 repos:
   - repo: https://github.com/sunxiayi/repo-agent-instruction-security-scan
-    rev: v1.1.3
+    rev: v1.2.0
     hooks:
       - id: repo-agent-instruction-security-scan
 ```
 
 Run `pre-commit install` after adding the configuration. The hook scans supported instruction files before each commit; install the optional push stage with `pre-commit install --hook-type pre-push`. Run it immediately across the current checkout with `pre-commit run repo-agent-instruction-security-scan --all-files`.
 
-The example uses the immutable `v1.1.3` release tag so `pre-commit autoupdate` can discover later releases. Pin `rev` to the full reviewed release commit when your policy requires a commit-SHA boundary.
+The example uses the immutable `v1.2.0` release tag so `pre-commit autoupdate` can discover later releases. Pin `rev` to the full reviewed release commit when your policy requires a commit-SHA boundary.
 
 ## What it reviews
 
@@ -114,6 +115,10 @@ The example uses the immutable `v1.1.3` release tag so `pre-commit autoupdate` c
 - Broad destructive commands
 - Broad access to sensitive files
 - Encoded or dynamically constructed execution
+
+`SKILL.md` files are scanned as privileged agent instructions wherever they
+appear in the repository. The scanner reviews their Markdown instructions but
+does not execute or inspect bundled scripts, binaries, or referenced assets.
 
 Every result includes a file, line, severity, evidence excerpt, and repair prompt. Files larger than 150 KB are skipped, discovery stops at 200 supported files, dependency/build directories and symlinks are ignored, and requested paths cannot escape the checked-out workspace.
 

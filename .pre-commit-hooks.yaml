@@ -1,6 +1,6 @@
 - id: repo-agent-instruction-security-scan
   name: Repo agent instruction security scan
-  description: Review coding-agent instruction files without executing them.
+  description: Review coding-agent instruction and SKILL.md files without executing them.
   entry: repo-agent-scan .
   language: node
   pass_filenames: false

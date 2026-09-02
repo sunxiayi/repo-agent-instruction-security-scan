@@ -98,7 +98,11 @@ function isSupportedInstructionFile(filePath) {
   const normalised = normalisePath(filePath);
   const base = path.posix.basename(normalised).toLowerCase();
 
-  if (['agents.md', 'claude.md', 'gemini.md', '.cursorrules'].includes(base)) {
+  if (
+    ['agents.md', 'claude.md', 'gemini.md', 'skill.md', '.cursorrules'].includes(
+      base,
+    )
+  ) {
     return true;
   }
 

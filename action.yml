@@ -1,5 +1,5 @@
 name: Repo Agent Instruction Security Scan
-description: Scan AGENTS.md, CLAUDE.md, Cursor, Copilot, Gemini, and Windsurf instructions for risky patterns.
+description: Scan AGENTS.md, SKILL.md, CLAUDE.md, Cursor, Copilot, Gemini, and Windsurf instructions for risky patterns.
 author: Repo Agent Kit
 
 branding:

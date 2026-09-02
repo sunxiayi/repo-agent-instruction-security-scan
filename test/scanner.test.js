@@ -14,6 +14,7 @@ const {
 test('recognises supported instruction file conventions', () => {
   const supported = [
     'AGENTS.md',
+    'skills/security-review/SKILL.md',
     'packages/app/CLAUDE.md',
     'GEMINI.md',
     '.cursorrules',
@@ -53,10 +54,15 @@ test('detects every documented signal and leaves a clean control unflagged', () 
 test('discovers nested files, skips dependencies and ignores symlinks', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'repo-agent-scan-'));
   fs.mkdirSync(path.join(root, 'packages', 'app'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'skills', 'security-review'), { recursive: true });
   fs.mkdirSync(path.join(root, '.github'), { recursive: true });
   fs.mkdirSync(path.join(root, 'node_modules', 'bad'), { recursive: true });
   fs.writeFileSync(path.join(root, 'AGENTS.md'), '# Root\n');
   fs.writeFileSync(path.join(root, 'packages', 'app', 'CLAUDE.md'), '# App\n');
+  fs.writeFileSync(
+    path.join(root, 'skills', 'security-review', 'SKILL.md'),
+    '# Security review skill\n',
+  );
   fs.writeFileSync(path.join(root, '.github', 'copilot-instructions.md'), '# Copilot\n');
   fs.writeFileSync(path.join(root, 'node_modules', 'bad', 'AGENTS.md'), '# Ignore\n');
   fs.symlinkSync(path.join(root, 'AGENTS.md'), path.join(root, 'packages', 'linked-AGENTS.md'));
@@ -66,6 +72,7 @@ test('discovers nested files, skips dependencies and ignores symlinks', () => {
     '.github/copilot-instructions.md',
     'AGENTS.md',
     'packages/app/CLAUDE.md',
+    'skills/security-review/SKILL.md',
   ]);
   fs.rmSync(root, { recursive: true, force: true });
 });
